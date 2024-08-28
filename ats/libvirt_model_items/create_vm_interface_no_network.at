@@ -1,0 +1,3 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+assertErrorMessage 'MissingRequiredPropertyError in property: "network_name"    ItemType "vm-network-interface" is required to have a property with name "network_name"'  create -t vm-network-interface -p /software/services/fmmed1/vm_network_interfaces/net1 -o device_name=eth0 host_device=br0

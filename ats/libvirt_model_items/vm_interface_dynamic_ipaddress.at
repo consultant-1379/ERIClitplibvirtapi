@@ -1,0 +1,3 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+litp create -t vm-network-interface -p /software/services/fmmed1/vm_network_interfaces/net1 -o network_name=mgmt device_name=eth0 host_device=br0 ipaddresses="dhcp"

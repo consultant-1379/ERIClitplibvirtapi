@@ -1,0 +1,33 @@
+##Test valid updates to firewall rule validation
+
+#Initial config
+litp create -t vm-service -p /software/services/test_service -o service_name="test_service" image_name="test_image"
+
+# TC-10 & TC-11 Create valid rule with non-default values for dport and proto
+litp create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 test rule" action="accept" provider=ip6tables proto=udp dport=5432
+
+# TC-12 Update proto to 'tcp' and dport to a single port
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o proto=tcp dport=22
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o proto=tcp
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o dport=22
+
+# TC-13 Update dport to be a range of ports
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o dport=22-30
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o dport=22-30
+
+# Check boundary values for a dport
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o dport=0
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o dport=0
+
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o dport=65535
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o dport=65535
+
+# Revert proto to and dport to test behaviour upon deletion of these properties
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o proto=udp dport=5432
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o proto=udp
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o dport=5432
+
+# Delete proto and dport and ensure they have defaulted to tcp for proto and 22 for dport
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -d proto dport
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o proto=tcp
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o dport=22

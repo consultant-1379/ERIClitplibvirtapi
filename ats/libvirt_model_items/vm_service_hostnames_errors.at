@@ -1,0 +1,16 @@
+assertError create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M hostnames=""
+
+assertError create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M hostnames="tmo-vm-1,"
+
+# 64 characters
+assertError create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M hostnames="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+
+# With digit
+assertError create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M hostnames="122"
+
+# With .
+assertError create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M hostnames="tmo.vm-1"
+assertError create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M hostnames="hdhdjsdfasdf-asdfjfhsdfksdfjasdfasdfasdfasasdf-asdfasdfasdfasdf.asdfasdfasdfasdfasdfasdfafsasdfasdfasdfasdfd"
+
+# Duplicate hostnames
+assertError create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M hostnames="ABC,ABC"

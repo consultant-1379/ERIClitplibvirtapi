@@ -1,0 +1,64 @@
+#Test invalid updates to vm-firewall-rules and validation errors
+
+litp create -t vm-service -p /software/services/test_service -o service_name="test_service" image_name="test_image"
+litp create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="01 test rule" action="accept" provider="iptables"
+
+# 1a. Update name to an unsupported value
+assertError --err_type "ValidationError" --err_property "name" --err_message "Invalid value '1_test'. Value must be a number 0-999, followed by a space, followed by a name containing only upper or lower case letters A-Z, digits, whitespace, underscores and hyphens. The value can be no longer than 255 characters." update -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1_test"
+
+# 1b. Update name to an unsupported value (rule number > 999)
+assertError --err_type "ValidationError" --err_property "name" --err_message "Invalid value '1234 test'. Value must be a number 0-999, followed by a space, followed by a name containing only upper or lower case letters A-Z, digits, whitespace, underscores and hyphens. The value can be no longer than 255 characters" update -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1234 test"
+
+# 1c. Update name to an unsupported value (no rule number)
+assertError --err_type "ValidationError" --err_property "name" --err_message "Invalid value 'test'. Value must be a number 0-999, followed by a space, followed by a name containing only upper or lower case letters A-Z, digits, whitespace, underscores and hyphens. The value can be no longer than 255 characters." update -p /software/services/test_service/vm_firewall_rules/test_rule -o name="test"
+
+# 1d. Update name to a value larger than 255 characters
+assertError --err_type "ValidationError" --err_property "name" --err_message "Property cannot be longer than 255" update -p /software/services/test_service/vm_firewall_rules/test_rule -o name="123 big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name" action="accept" provider="iptables"
+
+# 2a. Update action to empty
+assertError --err_type "ValidationError" --err_property "action" --err_message "Invalid value ''." update -p /software/services/test_service/vm_firewall_rules/test_rule -o name="170 test17" action=""
+
+# 2b. Update action to an unsupported value
+assertError --err_type "ValidationError" --err_property "action" --err_message "Invalid value 'ACCEPT'." update -p /software/services/test_service/vm_firewall_rules/test_rule -o action="ACCEPT"
+
+# 2c. Update action to another unsupported value
+assertError --err_type "ValidationError" --err_property "action" --err_message "Invalid value 'reject'." update -p /software/services/test_service/vm_firewall_rules/test_rule -o action="reject"
+
+# 3a. Update source to empty
+assertError --err_type "ValidationError" --err_property "source" --err_message "Value must be a valid IPv4/IPv6 network subnet." update -p /software/services/test_service/vm_firewall_rules/test_rule -o source=""
+
+# 3b. Update source to an unsupported value
+assertError --err_type "ValidationError" --err_property "source" --err_message "Value must be a valid IPv4/IPv6 network subnet." update -p /software/services/test_service/vm_firewall_rules/test_rule -o source="_"
+
+# 3c. Update source to an ipaddress range
+assertError --err_type "ValidationError" --err_property "source" --err_message "Value must be a valid IPv4/IPv6 network subnet." update -p /software/services/test_service/vm_firewall_rules/test_rule -o source="10.10.10.5-10.10.10.10"
+
+# 3d. Update source to ipaddress without a subnet mask
+assertError --err_type "ValidationError" --err_property "source" --err_message "Value must be a valid IPv4/IPv6 network subnet." update -p /software/services/test_service/vm_firewall_rules/test_rule -o source="10.10.10.10"
+
+# 3e. Update source to have "//"
+assertError --err_type "ValidationError" --err_property "source" --err_message "Value must be a valid IPv4/IPv6 network subnet." update -p /software/services/test_service/vm_firewall_rules/test_rule -o source="10.10.10.10//22"
+
+# 3f. Update source to have large prefix length
+assertError --err_type "ValidationError" --err_property "source" --err_message "Value must be a valid IPv4/IPv6 network subnet." update -p /software/services/test_service/vm_firewall_rules/test_rule -o source="10.10.10.10/12345"
+
+# 3g. Update source to an invalid subnet
+assertError --err_type "ValidationError" --err_message "Invalid IPv4 subnet value '1000.2000.888.1/44'" update -p /software/services/test_service/vm_firewall_rules/test_rule -o source="1000.2000.888.1/44"
+
+# 4a. Update provider to empty
+assertError --err_type "ValidationError" --err_property "provider" --err_message "Value must be either 'iptables' or 'ip6tables'." update -p /software/services/test_service/vm_firewall_rules/test_rule -o provider=""
+
+# 4b. Update provider to an unsupported value
+assertError --err_type "ValidationError" --err_property "provider" --err_message "Value must be either 'iptables' or 'ip6tables'." update -p /software/services/test_service/vm_firewall_rules/test_rule -o provider="rubbish"
+
+## Remove required properties
+litp create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule_3 -o name="003 yet another test rule" action="accept" provider="iptables"
+
+# 5a. Removed required property "action"
+assertError --err_type "MissingRequiredPropertyError" --err_property "action" --err_message "ItemType \"vm-firewall-rule\" is required to have a property with name \"action\"" update -p /software/services/test_service/vm_firewall_rules/test_rule_3 -d action
+
+# 5b. Removed required property "provider"
+assertError --err_type "MissingRequiredPropertyError" --err_property "provider" --err_message "ItemType \"vm-firewall-rule\" is required to have a property with name \"provider\"" update -p /software/services/test_service/vm_firewall_rules/test_rule_3 -d provider
+
+# 5c. Removed required property "name"
+assertError --err_type "MissingRequiredPropertyError" --err_property "name" --err_message "ItemType \"vm-firewall-rule\" is required to have a property with name \"name\"" update -p /software/services/test_service/vm_firewall_rules/test_rule_3 -d name

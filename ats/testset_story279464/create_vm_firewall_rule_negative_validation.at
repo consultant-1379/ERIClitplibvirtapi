@@ -1,0 +1,41 @@
+##Test validation errors at "create"
+litp create -t vm-service -p /software/services/test_service -o service_name="test_service" image_name="jboss"
+
+# 1a. Name contains unsupported value
+assertError --err_type "ValidationError" --err_property "name" --err_message "Invalid value '1$test'. Value must be a number 0-999, followed by a space, followed by a name containing only upper or lower case letters A-Z, digits, whitespace, underscores and hyphens. The value can be no longer than 255 characters." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1$test" provider="iptables" action="accept"
+
+# 1b. Name contains a rule number > 999
+assertError --err_type "ValidationError" --err_property "name" --err_message "Invalid value '1234 test'. Value must be a number 0-999, followed by a space, followed by a name containing only upper or lower case letters A-Z, digits, whitespace, underscores and hyphens. The value can be no longer than 255 characters." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1234 test" provider="iptables" action="accept"
+
+# 1c. Name contains no rule number
+assertError --err_type "ValidationError" --err_property "name" --err_message "Invalid value 'test'. Value must be a number 0-999, followed by a space, followed by a name containing only upper or lower case letters A-Z, digits, whitespace, underscores and hyphens. The value can be no longer than 255 characters." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="test" action="accept" provider="iptables"
+
+# 1d. Name contains a value larger than 255 characters
+assertError --err_type "ValidationError" --err_property "name" --err_message "Property cannot be longer than 255" create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="123 big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name big long name" action="accept" provider="iptables"
+
+# 2a. action set to empty
+assertError --err_type "ValidationError" --err_property "action" --err_message "Invalid value ''." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1 test" action="" provider="iptables"
+
+# 2b. action set to unsupported value
+assertError --err_type "ValidationError" --err_property "action" --err_message "Invalid value 'ACCEPT'." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1 test" action=ACCEPT provider="iptables"
+
+# 3a. source is empty
+assertError --err_type "ValidationError" --err_property "source" --err_message "Value must be a valid IPv4/IPv6 network subnet." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1 test" source="" action=accept provider="iptables"
+
+# 3b. source set to unsupported value
+assertError --err_type "ValidationError" --err_property "source" --err_message "Value must be a valid IPv4/IPv6 network subnet." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1 test" source=_ action=accept provider="iptables"
+
+# 4a. provider is empty
+assertError --err_type "ValidationError" --err_property "provider" --err_message "Value must be either 'iptables' or 'ip6tables'." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1 test" provider="" action="accept"
+
+# 4b. provider set to unsupported value
+assertError --err_type "ValidationError" --err_property "provider" --err_message "Value must be either 'iptables' or 'ip6tables'." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1 test" provider=rubbish action=accept state="NEW"
+
+# 5a. Create without required property provider
+assertError --err_type "MissingRequiredPropertyError" --err_property "provider" --err_message "ItemType \"vm-firewall-rule\" is required to have a property with name \"provider\"" create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule_ -o name="123 test" action="accept"
+
+# 5b. Create without required property action
+assertError --err_type "MissingRequiredPropertyError" --err_property "action" --err_message "ItemType \"vm-firewall-rule\" is required to have a property with name \"action\"" create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule_ -o name="123 test" provider="iptables" state="NEW"
+
+# 5c. Create without required property name
+assertError --err_type "MissingRequiredPropertyError" --err_property "name" --err_message "ItemType \"vm-firewall-rule\" is required to have a property with name \"name\"" create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o provider="iptables" action="accept"

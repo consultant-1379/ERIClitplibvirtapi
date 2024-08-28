@@ -1,0 +1,19 @@
+# create multiple libvirt-provider items
+litp create -p /infrastructure/system_providers/libvirt1 -t libvirt-provider -o name=l1
+litp create -p /infrastructure/system_providers/libvirt2 -t libvirt-provider -o name=l2
+litp create -p /infrastructure/system_providers/libvirt3 -t libvirt-provider -o name=l3
+
+# create multiple libvirt-systemr items
+litp create -p /infrastructure/system_providers/libvirt1/systems/sys1 -t libvirt-system -o system_name=sys1
+litp create -p /infrastructure/system_providers/libvirt1/systems/sys2 -t libvirt-system -o system_name=sys2
+litp create -p /infrastructure/system_providers/libvirt1/systems/sys3 -t libvirt-system -o system_name=sys3
+
+# create multiple libvirt-systemr items
+litp remove -p /infrastructure/system_providers/libvirt1/systems/sys1
+litp remove -p /infrastructure/system_providers/libvirt1/systems/sys2
+litp remove -p /infrastructure/system_providers/libvirt1/systems/sys3
+
+# ensure we can delete them
+litp remove -p /infrastructure/system_providers/libvirt1
+litp remove -p /infrastructure/system_providers/libvirt2
+litp remove -p /infrastructure/system_providers/libvirt3

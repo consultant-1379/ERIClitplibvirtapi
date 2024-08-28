@@ -1,0 +1,4 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+let __err_1 --err_message "map_ip_node" is not an allowed property of vm-network-interface --err_type PropertyNotAllowedError --err_property map_ip_node
+assertError __err_1 create -t vm-network-interface -p /software/services/fmmed1/vm_network_interfaces/net1 -o network_name=mgmt device_name=eth0 host_device=br0 ipaddresses="10.10.11.151" map_ip_node="{}"

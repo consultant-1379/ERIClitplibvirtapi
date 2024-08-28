@@ -1,0 +1,4 @@
+#Checksum is of invalid length, ie less than 32 characters
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+assertErrorMessage 'ValidationError in property: "checksum"' create -t vm-yum-repo -p /software/services/fmmed1/vm_yum_repos/repo1 -o name=enm base_url="http://example.com/yum_repo" checksum="331e37f2aba415R26b560e2152de"

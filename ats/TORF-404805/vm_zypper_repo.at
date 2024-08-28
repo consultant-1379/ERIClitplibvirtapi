@@ -1,0 +1,29 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+litp create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/repoX -o name=enm base_url="http://example.com/zypper_repo"
+litp create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/3PP -o name=3PP base_url="http://example.com/3PP"
+litp create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/LITP -o name=LITP base_url="http://example.com/LITP"
+
+litp create -t vm-package -p /software/services/fmmed1/vm_packages/pkg1 -o name=fmmed
+
+# ensure MissingRequiredPropertyError is thrown on creation of vm-zypper-repo without name
+let __err_case_1 --err_type MissingRequiredPropertyError --err_message 'ItemType "vm-zypper-repo" is required to have a property with name "name"'
+assertError __err_case_1 --err_property name create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/repo1 -o base_url="http://example.com/zypper_repo"
+
+# ensure MissingRequiredPropertyError is thrown on creation of vm-zypper-repo without base_url
+let __err_case_2 --err_type MissingRequiredPropertyError --err_message 'ItemType "vm-zypper-repo" is required to have a property with name "base_url"'
+assertError __err_case_2 --err_property base_url create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/repo1 -o name=enm
+
+# ensure ValidationError is thrown on creation of vm-zypper-repo with invalid value or empty string for base_url
+let __err_case_3 --err_type ValidationError --err_message "Invalid value "
+assertError __err_case_3 --err_property base_url create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/repo1 -o name=enm base_url="example.com"
+assertError __err_case_3 --err_property base_url create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/repo1 -o name=enm base_url=""
+
+# create zypper repo with checksum
+litp create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/repo1 -o name=enm base_url="http://example.com/zypper_repo" checksum="34d3e5f564534edf3458e8d834567a21"
+
+# create zypper repo with empty checksum - valid for initial phase"
+litp create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/repo2 -o name=enm base_url="http://example.com/zypper_repo" checksum=""
+
+# ensure ValidationError is thrown on creation of vm-zypper-repo with invalid checksum
+assertError __err_case_3 --err_property checksum create -t vm-zypper-repo -p /software/services/fmmed1/vm_zypper_repos/repo4 -o name=enm4 base_url="http://example.com/zypper_repo" checksum="34d3e5f564534edf3458"

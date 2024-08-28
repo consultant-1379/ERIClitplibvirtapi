@@ -1,0 +1,3 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+assertErrorMessage 'MissingRequiredPropertyError in property: "address"    ItemType "vm-alias" is required to have a property with name "address"' create -t vm-alias -p /software/services/fmmed1/vm_aliases/db1 -o alias_name=dbsvc1

@@ -1,0 +1,3 @@
+# wrong source_uri
+let __err_1 --err_message "Invalid value 'httpd//ms1/images/fmmed-1.0.1.qcow2'. Value must follow one of the supported schemes (http, https)." --err_type ValidationError --err_property source_uri
+assertError __err_1 create -t vm-image -p /software/images/image1 -o name="fmmed" source_uri="httpd//ms1/images/fmmed-1.0.1.qcow2"

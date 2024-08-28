@@ -1,0 +1,76 @@
+##Test valid updates to firewall rule validation
+
+#Initial config
+litp create -t vm-service -p /software/services/test_service -o service_name="test_service" image_name="test_image"
+
+#1. rule_1 rule that is created, updated and removed
+litp create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 test rule" action="accept" provider=ip6tables
+
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o action="drop" provider=iptables
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o action="drop" provider=iptables
+
+litp remove -p /software/services/test_service/vm_firewall_rules/rule_1
+assertNone -p /software/services/test_service/vm_firewall_rules/rule_1
+
+# Initial rule with all properties that will be updated during test
+litp create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 testname" action="drop" provider="iptables"
+
+# 2a. Update a rules name property
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 testing"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 testing"
+
+# 2b. Update a rule with name contains uppercase
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 NAME"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 NAME"
+
+# 2c. Update a rule with name contains multiple spaces
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 NAME  "
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 NAME"
+
+# 2d. Update a rule with name begins with one digit
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 1name"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o name="01 1name"
+
+# 2e. Update a rule with name containing rule number only
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="160"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o name="160"
+
+# 2f. Update a rule with name containing one digit rule number only
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="6"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o name="6"
+
+# 2g. Update a rule with name all supported characters
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o name="123 rule_name-with ALL_chars321"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o name="123 rule_name-with ALL_chars321"
+
+# 2h. Update a rule with name begins with a space
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o name=" 160 name"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o name="160 name"
+
+# 3a. Update action from drop to accept
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o action="accept"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o action="accept"
+
+# 3b. Update action from accept to drop
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o action="drop"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o action="drop"
+
+# 4a. Update Source from none to a valid IPv4 subnet
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o source="10.10.01.0/24" provider="iptables"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o source="10.10.01.0/24" provider="iptables"
+
+# 4b. Update Source from a valid IPv4 subnet to a valid IPv6 address subnet
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o source="2001:1b70:82a1:103::1/64" provider="ip6tables"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o source="2001:1b70:82a1:103::1/64" provider="ip6tables"
+
+# 4c. Update Source from a valid IPv6 address to a valid IPv6 subnet
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o source="fe80::a00:27ff:febc:c8e1/64" provider="ip6tables"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o source="fe80::a00:27ff:febc:c8e1/64" provider="ip6tables"
+
+# 4d. Update Source from a valid IPv6 address to a valid IPv6 subnet with 3 digits
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -o source="fe80::a00:27ff:febc:c8e1/120" provider="ip6tables"
+assertProperty /software/services/test_service/vm_firewall_rules/rule_1 -o source="fe80::a00:27ff:febc:c8e1/120" provider="ip6tables" 
+
+# 5. Update rule to remove source property
+litp update -p /software/services/test_service/vm_firewall_rules/rule_1 -d source
+assertPropertyUnset -p /software/services/test_service/vm_firewall_rules/rule_1 -o source

@@ -1,0 +1,4 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+# ensure error on creation of vm-yum-repo without name 
+assertErrorMessage 'ItemType "vm-yum-repo" is required to have a property with name "name"' create -p /software/services/fmmed1/vm_yum_repos/repo1 -t vm-yum-repo -o base_url="http://example.com/yum_repo"

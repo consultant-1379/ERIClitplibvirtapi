@@ -1,0 +1,5 @@
+# create libvirt image
+litp create -t vm-image -p /software/images/image1 -o name="fmmed" source_uri="http://ms1/images/fmmed-1.0.1.qcow2" 
+
+# create libvirt vm
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M

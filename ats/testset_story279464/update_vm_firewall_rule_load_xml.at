@@ -1,0 +1,23 @@
+## Test_11_update_vm_firewall_rule_load_xml
+## Description: When a valid "vm-firewall-rule" is updated inside "vm_firewall_rules" by loading an xml file, the "vm_firewall_rule" the item is updated successfully in the model.
+
+# Test setup
+litp create -t vm-service -p /software/services/test_vm_service -o service_name="test_vm_service" image_name="temp"
+litp create -t vm-firewall-rule -p /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o name="01 Initial Description" action="accept" provider="iptables"
+
+#Verify properties before item update
+assertProperty /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o name="01 Initial Description"
+assertProperty /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o action="accept"
+assertProperty /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o provider="iptables"
+assertState -p /software/services/test_vm_service/vm_firewall_rules/fw_test_2 Initial
+
+# Load an xml file which will update the "vm-firewall-rule" item
+litp load --merge -p /software/services/test_vm_service/vm_firewall_rules/ -f xml/item_updated.xml
+
+# Verify item is updated correctly in model
+assertProperty /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o name="01 Updated Description"
+assertProperty /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o action="drop"
+assertProperty /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o provider="ip6tables"
+
+# Verify item is in "Initial" state
+assertState -p /software/services/test_vm_service/vm_firewall_rules/fw_test_2 Initial

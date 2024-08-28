@@ -1,0 +1,5 @@
+litp update -p /litp/logging -o force_debug=true
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+assertErrorMessage "ValidationError    Invalid IPAddress value '10.10.11.152.1'" create -t vm-network-interface -p /software/services/fmmed1/vm_network_interfaces/net1 -o network_name=mgmt device_name=eth0 host_device=br0 ipaddresses="10.10.5.151,10.10.11.152.1"
+

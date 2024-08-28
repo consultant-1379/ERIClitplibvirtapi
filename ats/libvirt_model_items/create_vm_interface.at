@@ -1,0 +1,11 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+litp create -t vm-network-interface -p /software/services/fmmed1/vm_network_interfaces/net1 -o network_name=mgmt device_name=eth0 host_device=br0 ipaddresses="10.10.11.151,10.10.11.152"
+litp update -p /software/services/fmmed1/vm_network_interfaces/net1 -o mac_prefix=52:54:00
+
+assertError --err_message '"mac_prefix" should be 8 symbols long. For example: "AA:BB:CC".' update -p /software/services/fmmed1/vm_network_interfaces/net1 -o mac_prefix=52:54:0
+
+assertError --err_message '"mac_prefix" should contain a valid virtual machine mac prefix. This means that the second digit of the first octet must be one of four options: "2", "6", "A" or "E". For example: "52:55:55"' update -p /software/services/fmmed1/vm_network_interfaces/net1 -o mac_prefix=55:54:00
+
+assertError --err_message '"mac_prefix" should consist of three octets, separated by colon.' update -p /software/services/fmmed1/vm_network_interfaces/net1 -o mac_prefix=xx:54:00
+

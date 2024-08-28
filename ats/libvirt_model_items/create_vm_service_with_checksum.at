@@ -1,0 +1,1 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M internal_status_check=off image_checksum="34d3e5f564534edf3458e8d834567a21"

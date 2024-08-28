@@ -1,0 +1,6 @@
+
+# check system-provider creation in infrastructure
+litp create -p /infrastructure/system_providers/provider1 -t system-provider
+litp create -p /infrastructure/system_providers/provider2 -t system-provider
+litp create -p /infrastructure/system_providers/provider3 -t system-provider
+litp create -p /infrastructure/system_providers/provider4 -t system-provider

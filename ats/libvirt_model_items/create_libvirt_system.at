@@ -1,0 +1,30 @@
+# ensure error on creation of exisitng libvirt-provier item
+assertError create -p /infrastructure/system_providers/libvirt1 -t libvirt-provider
+
+# create libvirt provider
+litp create -p /infrastructure/system_providers/libvirt1 -t libvirt-provider -o name='libvirt1'
+
+# ensure error on creation of exisitng libvirt-provier item
+assertError create -p /infrastructure/system_providers/libvirt1 -t libvirt-provider -o name='libvirt1'
+
+# create more libvirt system-provier items
+litp create -p /infrastructure/system_providers/libvirt2 -t libvirt-provider -o name='libvirt2'
+litp create -p /infrastructure/system_providers/libvirt3 -t libvirt-provider -o name='libvirt3'
+
+# ensure system_provider collection cannot contains non system_provider items
+assertError create -p /infrastructure/system_providers/proX -t system
+assertError create -p /infrastructure/system_providers/proY -t node
+
+# link it to the ms node
+#litp /infrastructure/system_providers/libvirt1/host link node hostname='ms1'
+
+# create libvirt-systems that it will provide
+litp create -p /infrastructure/system_providers/libvirt1/systems/vm1 -t libvirt-system -o system_name='vm1'
+litp create -p /infrastructure/system_providers/libvirt1/systems/vm2 -t libvirt-system -o system_name='vm2'
+litp create -p /infrastructure/system_providers/libvirt1/systems/vm3 -t libvirt-system -o system_name='vm3'
+litp create -p /infrastructure/system_providers/libvirt1/systems/vm4 -t libvirt-system -o system_name='vm4'
+
+# ensure systems collection cannot contain non libvirt-system items
+assertError create -p /infrastructure/system_providers/libvirt1/systems/sysX -t system
+assertError create -p /infrastructure/system_providers/libvirt1/systems/sysY -t node -o hostname=test
+assertError create -p /infrastructure/system_providers/libvirt1/systems/sysZ -t node -o system_name='sysZ' path='NOT_A_PATH'

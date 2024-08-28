@@ -1,0 +1,4 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+# vm-package accepts dot in the name
+litp create -t vm-package -p /software/services/fmmed1/vm_packages/pkg1 -o name=a.b.c.de

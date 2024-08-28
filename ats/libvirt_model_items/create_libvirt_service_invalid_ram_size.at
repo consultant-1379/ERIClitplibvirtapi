@@ -1,0 +1,9 @@
+# create libvirt image
+litp create -t vm-image -p /software/images/image1 -o name="fmmed" source_uri="http://ms1/images/fmmed-1.0.1.qcow2"
+
+# wrong ram value
+let __err_1 --err_message 'Invalid value "31M". Value must be greater than or equal to 32M.' --err_type ValidationError --err_property ram
+assertError __err_1 create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=31M
+
+let __err_2 --err_message 'Invalid value '"'"'31'"'"'. Value must be greater than or equal to 32 followed by "M".' --err_type ValidationError --err_property ram
+assertError __err_2  create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=31

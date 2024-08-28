@@ -1,0 +1,16 @@
+##Test_11_create_vm_firewall_rule_load_xml
+##Description: When a valid "vm_firewall_rule" is created inside "vm-firewall-rules" by loading an xml file, the "vm_firewall_rule" the item is created successfully in the model.
+
+#test setup
+litp create -t vm-service -p /software/services/test_vm_service -o service_name="test_vm_service" image_name="temp"
+
+#Load the xml file which will create a "vm-firewall-rule" item
+litp load --merge -p /software/services/test_vm_service/vm_firewall_rules/ -f xml/item.xml
+
+# Verify item is created correctly in model
+assertProperty /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o name="01 Initial Description"
+assertProperty /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o action="accept"
+assertProperty /software/services/test_vm_service/vm_firewall_rules/fw_test_2 -o provider="iptables"
+
+# Verify item is in "Initial" state
+assertState -p /software/services/test_vm_service/vm_firewall_rules/fw_test_2 Initial

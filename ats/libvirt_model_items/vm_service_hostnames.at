@@ -1,0 +1,13 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M hostnames="tmo-vm-1,tmo-vm-2"
+
+# 63 Characters
+litp create -t vm-service -p /software/services/fmmed2 -o service_name=fmmed2 image_name=fmmed cpus=1 ram=128M hostnames="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+
+litp create -t vm-service -p /software/services/fmmed3 -o service_name=fmmed3 image_name=fmmed cpus=1 ram=128M hostnames="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,BB,CCCC"
+
+litp create -t vm-service -p /software/services/fmmed4 -o service_name=fmmed4 image_name=fmmed cpus=1 ram=128M hostnames="td"
+
+litp create -t vm-service -p /software/services/fmmed5 -o service_name=fmmed5 image_name=fmmed cpus=1 ram=128M hostnames="tmo-vm-1"
+
+# One letter is supported
+litp create -t vm-service -p /software/services/fmmed6 -o service_name=fmmed6 image_name=fmmed cpus=1 ram=128M hostnames="m"

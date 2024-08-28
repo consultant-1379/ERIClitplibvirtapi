@@ -1,0 +1,10 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+# ensure error on creation of vm-yum-repo without base_url
+assertError create -p /software/services/fmmed1/vm_yum_repos/repo1 -t vm-yum-repo -o name=enm
+
+litp create -t vm-yum-repo -p /software/services/fmmed1/vm_yum_repos/repo1 -o name=enm base_url="http://example.com/yum_repo"
+litp create -t vm-yum-repo -p /software/services/fmmed1/vm_yum_repos/3PP -o name=3PP base_url="http://example.com/3PP"
+litp create -t vm-yum-repo -p /software/services/fmmed1/vm_yum_repos/LITP -o name=LITP base_url="http://example.com/LITP"
+
+litp create -t vm-package -p /software/services/fmmed1/vm_packages/pkg1 -o name=fmmed

@@ -1,0 +1,8 @@
+litp create -t vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M
+
+litp create -t vm-alias -p /software/services/fmmed1/vm_aliases/vm_alias1 -o alias_names=vmAlias1 address=10.10.10.102
+
+litp create -t vm-alias -p /software/services/fmmed1/vm_aliases/vm_alias2 -o alias_names="vmAlias2,server.domain" address=10.10.10.103
+
+#TORF-349676 - Check that IPv6 addresses containing a prefix are allowed.
+litp create -t vm-alias -p /software/services/fmmed1/vm_aliases/vm_alias3 -o alias_names="vmAlias3" address=2001:1b70:82a1:103::1/64

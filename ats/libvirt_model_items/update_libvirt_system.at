@@ -1,0 +1,36 @@
+
+# create and check libvirt provider properties
+litp create -p /infrastructure/system_providers/libvirt1 -t libvirt-provider -o name='libvirt_01'
+assertProperty /infrastructure/system_providers/libvirt1 -o name='libvirt_01'
+litp create -p /infrastructure/system_providers/libvirt2 -t libvirt-provider -o name='libvirt_02'
+assertProperty /infrastructure/system_providers/libvirt2 -o name='libvirt_02'
+
+# update and check libvirt provider properties
+litp update -p /infrastructure/system_providers/libvirt1 -o name='libvirt_01'
+assertProperty /infrastructure/system_providers/libvirt1 -o name='libvirt_01'
+assertProperty /infrastructure/system_providers/libvirt1 -o bridge='br0'
+
+
+# create and check libvirt system properties
+litp create -p /infrastructure/system_providers/libvirt1/systems/vm1 -t libvirt-system -o system_name='VM1'
+assertProperty /infrastructure/system_providers/libvirt1/systems/vm1 -o system_name='VM1'
+litp create -p /infrastructure/system_providers/libvirt1/systems/vm2 -t libvirt-system -o system_name='VM2'
+assertProperty /infrastructure/system_providers/libvirt1/systems/vm2 -o system_name='VM2'
+
+# update and check libvirt system properties
+litp update -p /infrastructure/system_providers/libvirt1/systems/vm1 -o system_name='new_VM1'
+assertProperty /infrastructure/system_providers/libvirt1/systems/vm1 -o system_name='new_VM1'
+
+# check libvirt system defaults
+litp show -p /infrastructure/system_providers/libvirt1/systems/vm2
+assertProperty /infrastructure/system_providers/libvirt1/systems/vm2 -o system_name='VM2'
+assertProperty /infrastructure/system_providers/libvirt1/systems/vm2 -o system_name='VM2'
+##3618 assertProperty /infrastructure/system_providers/libvirt1/systems/vm2 -o disk_size='40G'
+assertProperty /infrastructure/system_providers/libvirt1/systems/vm2 -o ram='2048M'
+assertProperty /infrastructure/system_providers/libvirt1/systems/vm2 -o cpus='2'
+assertProperty /infrastructure/system_providers/libvirt1/systems/vm2 -o path='/var/lib/libvirt/images'
+
+
+# update to invalid path property
+assertError update -p /infrastructure/system_providers/libvirt1/systems/vm1 -o path='NOT_A_PATH'
+assertProperty /infrastructure/system_providers/libvirt1/systems/vm1 -o path='/var/lib/libvirt/images'

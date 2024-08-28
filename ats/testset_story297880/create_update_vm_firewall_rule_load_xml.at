@@ -1,0 +1,24 @@
+##TC-20 Create valid vm-firewall-rule item using xml.
+
+#test setup
+litp create -t vm-service -p /software/services/test_vm_service -o service_name="test_vm_service" image_name="img"
+
+litp load -p /software/services/test_vm_service/vm_firewall_rules/ -f xml/valid_rule.xml
+
+# Verify item is created correctly in model
+# proto and dport receive their default values given that they are not explicitly set in the xml
+assertProperty /software/services/test_vm_service/vm_firewall_rules/test_rule1 -o proto="tcp"
+assertProperty /software/services/test_vm_service/vm_firewall_rules/test_rule1 -o dport="22"
+
+# Verify item is in "Initial" state
+assertState -p /software/services/test_vm_service/vm_firewall_rules/test_rule1 Initial
+
+## TC-21 Update a vm-firewall-rule item using xml
+litp load --merge -p /software/services/test_vm_service/vm_firewall_rules/ -f xml/valid_update_rule.xml
+
+# Verify item is updated correctly in model
+assertProperty /software/services/test_vm_service/vm_firewall_rules/test_rule1 -o proto="udp"
+assertProperty /software/services/test_vm_service/vm_firewall_rules/test_rule1 -o dport="8080"
+
+# Verify item is in "Initial" state
+assertState -p /software/services/test_vm_service/vm_firewall_rules/test_rule1 Initial

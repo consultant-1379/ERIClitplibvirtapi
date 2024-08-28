@@ -1,0 +1,43 @@
+# ERIClitplibvirtapi cpunodebind validation ATs
+# Verify cpunodebind validation will pass when valid values are set and raise
+#   a ValidationError when an invalid value is used in any part of the value
+#   being set. Note '8,' is seen as 2 values, 8 and an empty string
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value 'abc'. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=abc
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value ''. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=,2
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value ''. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=2,
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value 'A'. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=2,A
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value 'a'. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=a,2
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value '-1'. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=-1
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value '1-'. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=1-
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value '1-a'. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=1-a
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value 'a-1'. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=a-1
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value 'a-1'. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=a-1,2
+
+let __err_invalid  --err_property cpunodebind --err_type ValidationError --err_message "Invalid value '2-'. Valid values are a comma seperated list of positive integer values"
+assertError __err_invalid create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1 cpunodebind=1,2-
+
+litp create -t vm-service -p /software/services/test1 -o image_name=img1 service_name=test1
+litp create -t vm-service -p /software/services/test2 -o image_name=img1 service_name=test2 cpunodebind=1
+litp create -t vm-service -p /software/services/test3 -o image_name=img1 service_name=test3 cpunodebind=1,2
+litp update -p /software/services/test3 -o cpunodebind=3
+litp update -p /software/services/test3 -d cpunodebind

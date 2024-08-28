@@ -1,0 +1,30 @@
+##Test validation errors at "create"
+litp create -t vm-service -p /software/services/test_service -o service_name="test_service" image_name="jboss"
+
+# TC-14 proto set to unsupported value
+assertError --err_type "ValidationError" --err_property "proto" --err_message "Value must be one of either 'tcp' or 'udp'" create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1 test" provider=iptables action=accept state="NEW" proto="icmp"
+
+# TC-15 dport set to unsupported value (> 65535)
+assertError --err_type "ValidationError" --err_property "dport" --err_message "Value of a port must be a number between 0 and 65535. A range using '-' is also supported." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1 test" provider=iptables action=accept state="NEW" proto="tcp" dport="70000"
+
+# TC-16 dport set to unsupported value (non-Integer)
+assertError --err_type "ValidationError" --err_property "dport" --err_message "Value of a port must be a number between 0 and 65535. A range using '-' is also supported." create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="1 test" provider=iptables action=accept state="NEW" proto="tcp" dport="twentytwo"
+
+# Create a valid rule to test invalid updates
+litp create -t vm-firewall-rule -p /software/services/test_service/vm_firewall_rules/test_rule -o name="01 test rule" action="accept" provider="iptables" proto="tcp" dport="22"
+
+# TC-17 Update proto to an unsupported value
+assertError --err_type "ValidationError" --err_property "proto" --err_message "Value must be one of either 'tcp' or 'udp'" update -p /software/services/test_service/vm_firewall_rules/test_rule -o proto="garbage"
+
+# TC-18a dport updated to unsupported value (> 65535)
+assertError --err_type "ValidationError" --err_property "dport" --err_message "Value of a port must be a number between 0 and 65535. A range using '-' is also supported." update -p /software/services/test_service/vm_firewall_rules/test_rule -o dport="90000"
+
+# TC-18b dport updated to unsupported value (< 0)
+assertError --err_type "ValidationError" --err_property "dport" --err_message "Value of a port must be a number between 0 and 65535. A range using '-' is also supported." update -p /software/services/test_service/vm_firewall_rules/test_rule -o dport="-100"
+
+# TC-19 dport updated to unsupported value (non-Integer)
+assertError --err_type "ValidationError" --err_property "dport" --err_message "Value of a port must be a number between 0 and 65535. A range using '-' is also supported." update -p /software/services/test_service/vm_firewall_rules/test_rule -o dport="twentytwo"
+
+# Test dport range validator
+assertError --err_type "ValidationError" --err_property "dport" --err_message "Invalid port range (min >= max)" update -p /software/services/test_service/vm_firewall_rules/test_rule -o dport="30-22"
+assertError --err_type "ValidationError" --err_property "dport" --err_message "Invalid port range (min >= max)" update -p /software/services/test_service/vm_firewall_rules/test_rule -o dport="22-22"

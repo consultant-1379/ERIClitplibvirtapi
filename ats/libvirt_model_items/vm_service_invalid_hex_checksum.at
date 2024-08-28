@@ -1,0 +1,2 @@
+#Test to ensure an invalid checksum format is caught.In this case 34d31e37f2aba415R26b560e2152de don't respect the regex because has an R.
+assertErrorMessage 'ValidationError in property: "image_checksum"' create -t  vm-service -p /software/services/fmmed1 -o service_name=fmmed1 image_name=fmmed cpus=1 ram=128M internal_status_check=off image_checksum="34d31e37f2aba415R26b560e2152de"
